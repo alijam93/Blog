@@ -1,0 +1,77 @@
+﻿@inject IJSRuntime JSRuntime
+
+
+<div class="row">
+    <div class="col-lg-10 col-md-10 order-1 p-3 pt-5">
+        <div class="container">
+            <div class="card pr-4">
+                @if (Preview == null)
+                {
+                    @*<p>درحال بار گزاری...</p>*@
+                    <div style="padding-bottom: 200px">
+                    <Spinner />
+                    </div>
+                }
+                else
+                {
+                    <div class="card-body">
+                        <div class="card-text">
+
+                            @((MarkupString)Preview)
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-2 col-md-2 order-md-1">
+        <div class="row">
+            <div class="col-sm-2">
+                <div class="@ToggleBtn">
+                    <button class="bg-info @SidBarCssClass" @onclick="ToggleNavMenu">
+                        <span class="oi oi-collapse-@Icon" style="color: #fff;"></span>
+                    </button>
+                </div>
+            </div>
+            <div class="w-100"></div>
+            <div class="col-sm-2">
+                <div class="sidebar">
+                    <div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+                        <BlazoredMenu>
+                            @Links
+                        </BlazoredMenu>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    [Parameter] public RenderFragment Links { get; set; }
+    string Preview;
+
+    bool collapseNavMenu = true;
+
+    string NavMenuCssClass => collapseNavMenu ? "collapse navbar-collapse" : null;
+    string SidBarCssClass => collapseNavMenu ? "" : "outBtn";
+    string Icon => collapseNavMenu ? "left" : "right";
+    string ToggleBtn => collapseNavMenu ? "inBtn" : "outBtn";
+
+    void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JSRuntime.InvokeVoidAsync("Prism.highlightAll");
+    }
+
+    public void DocContent(string html)
+    {
+        Preview = Markdown.ToHtml(html);
+    } 
+}
+
+

@@ -1,0 +1,39 @@
+﻿@page "/tag/{Name}"
+@inject HttpClient http
+
+@if (Posts == null)
+{
+    <Spinner />
+
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2">
+        @foreach (var post in Posts)
+        {
+            <div class="col mb-4">
+                <div class="blog-card">
+                    <img class="blog-img" src="https://user-images.githubusercontent.com/16360374/37567282-e1932872-2a81-11e8-807b-efc5a997f2f1.jpg" />
+                    <div class="text-overlay">
+                        <h2 class="card-title">@post.Title</h2>
+                        <p>
+                            @*@post.Content.Substring(0, 70)*@
+                            @*@post.Content.Substring(0, Math.Min(post.Content.Length, 70))*@
+                            <a href="@($"article/{post.Id}/{FriendlyUrlExtension.GetSlugTitle(post.Title)}")" class="read-more stretched-link">مطالعه بیشتر</a>
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private PostDTO[] Posts;
+    [Parameter] public string Name { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Posts = await http.GetFromJsonAsync<PostDTO[]>($"api/posts/{Name}");
+    }
+}

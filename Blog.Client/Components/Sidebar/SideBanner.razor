@@ -1,0 +1,11 @@
+﻿@*@typeparam TItem*@
+<li class="nav-item">
+    <div id="navIcon">
+        <span>@Title آموزش</span>
+        <img src="images/logo/@Image" />
+    </div>
+</li>
+@code {
+    [Parameter] public string Title { get; set; }
+    [Parameter] public string Image { get; set; }
+}

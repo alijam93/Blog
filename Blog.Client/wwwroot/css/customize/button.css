@@ -1,0 +1,83 @@
+﻿.comment-btn {
+    padding: 6px 18px;
+    background: inherit;
+    border: 1px solid #5CC4C0;
+    color: #5CC4C0;
+    font-size: 22px;
+    border-radius: 15px;
+    letter-spacing: .5px;
+    text-transform: uppercase;
+    transition: all .5s linear;
+}
+
+    .comment-btn:hover {
+        color: white;
+        background: #5CC4C0;
+        text-decoration: none !important;
+    }
+
+
+.oi {
+    margin-right: 10px;
+    -webkit-animation: spinning ease-in-out;
+}
+
+.oi-comment-square {
+}
+
+@-webkit-keyframes spinning {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+.btn1 {
+    background-color: #6a1b9a;
+    border: none;
+    width: 100px;
+    box-shadow: 0 .125rem .25rem rgba(0,0,0,.075);
+    border-radius: 25px;
+    color: white;
+    padding: 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    transition-duration: 0.4s;
+}
+
+    .btn1:hover {
+        box-shadow: 0 0.3rem 0.1rem rgba(0,0,0,.15);
+        background-color: #7b1fa2;
+        cursor: pointer;
+        border: none;
+    }
+
+.btn1-disable {
+    background-color: #6c757d;
+    border: none;
+    pointer-events: none;
+    width: 100px;
+    border-radius: 25px;
+    color: #d4cdcd;
+    padding: 5px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px; 
+    transition-duration: 0.4s;
+}
+
+.button-disable {
+    background-color: #6c757d;
+    pointer-events: none;
+    color: #d4cdcd;
+}
+     

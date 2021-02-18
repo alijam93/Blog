@@ -1,0 +1,41 @@
+﻿@page "/csharp"
+@page "/csharp/{FileUrl}"
+@inject HttpClient http
+
+<SideBarLink @ref="_sideBarLink">
+    <Links>
+        <SideBanner Title="C#" Image="csharp.svg" />
+        <div class="nav-item">
+            <NavLink id="headNav" class="nav-link">
+                <span class="">مقدماتی</span>
+            </NavLink>
+        </div>
+        <BlazoredMenuItem>
+            <NavLink class="nav-link" href="/csharp/intro" Match="NavLinkMatch.All">intro</NavLink>
+        </BlazoredMenuItem>
+        <BlazoredMenuItem>
+            <NavLink class="nav-link" href="/csharp/variables" Match="NavLinkMatch.All">html</NavLink>
+        </BlazoredMenuItem>
+    </Links>
+</SideBarLink>
+
+@code {
+    [Parameter] public string FileUrl { get; set; }
+    SideBarLink _sideBarLink;
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            FileUrl = FileUrl ?? "intro";
+            string response = await http.GetStringAsync($"wwwroot/docs/csharp/{FileUrl}.md");
+          
+            _sideBarLink.DocContent(response);
+        }
+        catch (HttpRequestException e)
+        {
+            Console.WriteLine($"Don't worry!!{e}");
+        }
+    }
+}

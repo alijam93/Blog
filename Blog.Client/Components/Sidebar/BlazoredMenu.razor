@@ -1,0 +1,38 @@
+﻿@using System
+
+@if (ChildContent != null)
+{
+        <ul class="nav @Css">
+                @ChildContent
+        </ul>
+}
+else
+{
+    <ul class="nav @Css">
+            @foreach (var item in MenuBuilder.Build(x => x.Position))
+            {
+                @if (item.IsSubMenu && item.IsVisible)
+                {
+                    <BlazoredSubMenu Header="@item.Title" IsEnabled="@item.IsEnabled" MenuItems="@item.MenuItems.Build(x => x.Position)" />
+                }
+                else if (!item.IsSubMenu && item.IsVisible)
+                {
+                    <BlazoredMenuItem MenuItem="@item" IsEnabled="@item.IsEnabled" />
+                }
+            }
+    </ul>
+}
+
+@code {
+    [Parameter] public RenderFragment ChildContent { get; set; }
+    [Parameter] public MenuBuilder MenuBuilder { get; set; }
+    [Parameter] public string Css { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (ChildContent != null && MenuBuilder != null)
+        {
+            throw new InvalidOperationException($"Cannot use child content and menu builder together");
+        }
+    }
+} 

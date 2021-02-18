@@ -1,0 +1,134 @@
+﻿@page "/articles"
+@inject HttpClient http
+@inject PostApi postApi
+@using Blog.Shared.Providers.Pagination
+@using Microsoft.AspNetCore.WebUtilities
+@inject NavigationManager navigation
+
+
+@if (Posts == null)
+{
+    <Spinner />
+}
+else
+{
+
+    <div class="d-flex justify-content-end mt-2 mr-5">
+        <RadioGroup @bind-Value="@tagId" Size="small" ButtonStyle="solid">
+
+            <Radio RadioButton Value="0"><p @onclick="() => GetPostByTag(null, 0)">نمایش همه پست ها</p> </Radio>
+            @foreach (var tag in Tags)
+                {
+                <Radio RadioButton Value="@tag.Id"><p @onclick="() => GetPostByTag(tag.Name, tag.Id)">@tag.Name</p> </Radio>
+                }
+        </RadioGroup>
+        <div><p class="badge badge-light shadow-sm text-center p-2 ml-3"><strong>تگ ها:</strong></p></div>
+    </div>
+
+    <div class="row row-cols-1 row-cols-md-2">
+        @foreach (var post in Posts)
+        {
+            <div class="col mb-4">
+                <div class="card article-card">
+                    @if (!string.IsNullOrEmpty(post.Image))
+                    {
+                        <img src="@post.Image" class="article-img" loading="lazy" />
+                    }
+                    else
+                    {
+                        <div class="article-img"></div>
+                    }
+                    <div class="card-body article-body">
+                        <h5 class="card-title text-wrap article-title rtl">
+                            <a href="@($"article/{post.Id}/{FriendlyUrlExtension.GetSlugTitle(post.Title)}")" class="read-more">
+                                @post.Title
+                            </a>
+                        </h5>
+                        <div class="card-text d-flex bd-highlight pt-4 mb-3">
+                            <div class="mr-auto p-2 bd-highlight">
+                                <AntDesign.Tag Color="blue"> @post.Created.ToPersianDate()</AntDesign.Tag>
+                            </div>
+                            <div class="p-2 bd-highlight">
+                                @foreach (var tag in post.Tags)
+                                {
+                                    <AntDesign.Tag Color="purple">@tag.Name</AntDesign.Tag>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        } 
+    </div>
+
+    <div class="row mt-5 justify-content-center">
+        <Blog.Client.Components.UI.PostPagination Paging="Paging" Spread="3" SelectedPage="SelectedPage" />
+    </div>
+}
+
+<style>
+    .article-card {
+        height: 300px;
+        margin: 20px;
+        border-radius: 15px;
+        box-shadow: 0 .5rem 1rem rgba(0,0,0,.075) !important;
+        transition-duration: 0.4s;
+    }
+
+        .article-card:hover {
+            box-shadow: 0 1rem 3rem rgba(0,0,0,.175) !important;
+            transition: all 450ms ease-in-out 0s;
+        }
+
+    .article-img {
+        background-image: linear-gradient(135deg, #ff7d47, #e64a19 );
+        height: 180px;
+        border-radius: 15px;
+    }
+
+    .article-title {
+        height: 25px;
+    }
+
+    .article-body {
+        height: 120px;
+    } 
+</style>
+
+
+@code {
+    private List<TagDTO> Tags { get; set; } = new List<TagDTO>();
+    int pageCount = 0;
+    public string tagName;
+    public int tagId;
+
+
+    public List<PostDTO> Posts;
+    public Paging Paging { get; set; } = new Paging();
+    private PostParameters _postParameters = new PostParameters();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Tags = await http.GetFromJsonAsync<List<TagDTO>>("api/admin/tags");
+        var uri = navigation.ToAbsoluteUri(navigation.Uri);
+        if (QueryHelpers.ParseQuery(uri.Query).TryGetValue("page", out var value))
+        {
+            pageCount = Convert.ToInt32(value);
+        }
+        await GetPostByTag(tagName, tagId);
+    }
+
+    private async Task SelectedPage(int page)
+    {
+        _postParameters.PageNumber = page;
+        await GetPostByTag(tagName, tagId);
+        Console.WriteLine($"page is => {page}, page count => {pageCount}");
+    }
+
+    public async Task GetPostByTag(string name, int id)
+    {
+        var pagingPost = await postApi.GetPosts(_postParameters, name, id);
+        Posts = pagingPost.Items;
+        Paging = pagingPost.Paging;
+    }
+}

@@ -1,0 +1,231 @@
+
+#content {
+    /*    margin: 15px;*/
+    background-color: #fffde7;
+}
+
+.sidebar {
+    background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    top: 0;
+    right: 0;
+    bottom: 0; 
+}
+
+    .sidebar .navbar-brand {
+        font-size: 1.1rem;
+    }
+
+    .sidebar .oi {
+        width: 2rem;
+        font-size: 1.1rem;
+        vertical-align: text-top;
+        top: -2px;
+    }
+
+    .sidebar .nav-item .nav-link {  
+        text-align: right;
+    }
+
+
+
+    .sidebar .nav-item {
+        font-size: 0.9rem;
+        padding: 0.1rem;
+        width: 250px;
+    }
+
+        .sidebar .nav-item:first-of-type {
+            padding-top: 1rem;
+        }
+
+        .sidebar .nav-item:last-of-type {
+            padding-bottom: 1rem;
+        }
+
+        .sidebar .nav-item a {
+            color: #d7d7d7;
+            border-radius: 4px;
+            height: 3rem; 
+            align-items: center; 
+        }
+
+            .sidebar .nav-item a.active {
+                background-color: rgba(255,255,255,0.25);
+                color: white;
+            }
+
+            .sidebar .nav-item a:hover {
+                background-color: rgba(255,255,255,0.1);
+                color: white;
+            }
+
+
+@media (max-width: 700px) {
+
+    .sidebar .nav-item { 
+        font-size: 0.9rem;
+        padding: 0.1rem;
+        width: 400px;
+    }
+
+    .inBtn {
+        float: right;
+        margin-top: -12px;
+        transition: width 2s;
+    }
+
+    .outBtn {
+        float: left;
+        margin-top: -6px;
+        background-image: linear-gradient(180deg, rgb(5, 39, 103) 0%, #3a0647 70%);
+    }
+
+    #navIcon img {
+        width: 20px;
+        height: 20px;
+        margin: 5px;
+        border-radius: 5px;
+    }
+}
+
+@media (min-width: 768px) {
+    .inBtn {
+        display: none;
+    }
+
+    .sidebar {
+        width: 250px;
+        height: 100vh; 
+        padding-top: 30px;
+        position: fixed;
+        float: right;
+        top: 0;
+        right: 0;
+        margin-right: 0 !important;
+    }
+
+
+        .sidebar .collapse {
+            /* Never collapse the sidebar for wide screens */
+            display: block;
+        }
+
+
+    #navIcon img {
+        width: 70px;
+        height: 70px;
+        margin: 5px;
+        border-radius: 5px;
+    }
+}
+
+
+#navIcon {
+    float: right;
+}
+
+    #navIcon span {
+        color: aquamarine;
+        font-family: aghasem;
+        margin-right: 5px;
+        font-size: 15px;
+    }
+
+#headNav {
+    background-color: #00796b;
+}
+
+#headNav {
+    color: #fff;
+    font-family: yekan;
+    text-shadow: 1px 1px 2px black, 0 0 25px blue, 0 0 5px darkblue;
+    border: 2px solid #73AD21;
+    padding: 5px;
+    font-size: 18px;
+}
+/*
+#subMenu > a {
+    color: #d7d7d7;
+    margin-right: 30px;
+}*/
+
+.blazored-menu {
+    list-style: none;
+    padding: 1rem 0;
+}
+
+    .blazored-menu li.hidden {
+        display: none;
+    }
+
+    .blazored-menu li a {
+        display: block;
+        padding: .75rem 1rem;
+        color: #333;
+        cursor: pointer;
+    }
+
+        .blazored-menu li a:hover {
+            text-decoration: none;
+        }
+
+        .blazored-menu li a.active {
+            /*            color: #d7d7d7;*/
+        }
+
+    .blazored-menu .disabled {
+        display: block;
+        padding: .75rem 1rem;
+        color: #d6d5d5;
+        cursor: not-allowed;
+    }
+
+#test {
+    color: aqua;
+}
+
+.blazored-sub-menu-header {
+    text-align: right;
+    display: block;
+    cursor: pointer;
+    color: #d7d7d7 !important;
+    padding: 5px;
+    font-size: 18px;
+}
+
+    .blazored-sub-menu-header span:hover {
+        text-decoration: none;
+    }
+
+    .blazored-sub-menu-header span {
+        display: block;
+        padding: .75rem 1rem;
+        position: relative;
+    }
+
+        .blazored-sub-menu-header span i {
+            position: absolute;
+            /*            right: 0;*/
+        }
+
+    .blazored-sub-menu-header.open span {
+        padding-bottom: .75rem;
+        text-decoration: none;
+    }
+
+.blazored-sub-menu {
+    display: none;
+    padding: 0;
+    margin-left: 1rem;
+    list-style: none;
+}
+
+    .blazored-sub-menu a {
+        color: #d7d7d7;
+        padding-right: 40px;
+    }
+
+.blazored-sub-menu-header.open .blazored-sub-menu {
+    display: block;
+}

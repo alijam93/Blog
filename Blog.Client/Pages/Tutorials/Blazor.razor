@@ -1,0 +1,60 @@
+﻿@page "/blazor"
+@page "/blazor/{FileUrl}"
+@inject HttpClient http
+
+<SideBarLink @ref="_sideBarLink">
+    <Links>
+        <SideBanner Title="Blazor" Image="blazor.png" />
+        <div class="nav-item">
+            <NavLink id="headNav" class="nav-link">
+                <span class="text-body">مقدماتی</span>
+            </NavLink>
+        </div>
+        <BlazoredMenuItem>
+            <NavLink class="nav-link" href="/blazor/intro" Match="NavLinkMatch.All">معرفی</NavLink>
+        </BlazoredMenuItem>
+        <BlazoredMenuItem>
+            <NavLink class="nav-link" href="/blazor/text" Match="NavLinkMatch.All">
+                نحوه ساخت و استفاده از کامپوننت ها Blazor
+            </NavLink>
+        </BlazoredMenuItem>
+        <BlazoredMenuItem>
+            <NavLink class="nav-link" href="/blazor/text1" Match="NavLinkMatch.All">پارامتر های کامپوننت ها</NavLink>
+        </BlazoredMenuItem>
+        <BlazoredMenuItem>
+            <NavLink class="nav-link" href="/blazor/text11" Match="NavLinkMatch.All">
+                اعضای کامپوننت (child components)
+            </NavLink>
+        </BlazoredMenuItem>
+        <BlazoredMenuItem>
+            <NavLink class="nav-link" href="/blazor/text111" Match="NavLinkMatch.All">One Way Binding در Blazor</NavLink>
+        </BlazoredMenuItem>
+        <BlazoredMenuItem>
+            <NavLink class="nav-link" href="/blazor/text1111" Match="NavLinkMatch.All">
+                بایند کردن دیتا
+            </NavLink>
+        </BlazoredMenuItem>
+    </Links>
+</SideBarLink>
+
+@code {
+    [Parameter] public string FileUrl { get; set; }
+    SideBarLink _sideBarLink;
+ 
+
+    protected override async Task OnInitializedAsync()
+    //protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            FileUrl = FileUrl ?? "intro";
+            string response = await http.GetStringAsync($"wwwroot/docs/blazor/{FileUrl}.md");
+
+            _sideBarLink.DocContent(response);
+        }
+        catch (HttpRequestException e)
+        {
+            Console.WriteLine($"Don't worry!!{e}");
+        }
+    }
+}

@@ -1,0 +1,6 @@
+<Project>
+    <!--$()-->
+    <PropertyGroup>
+        <AspNetVersion>5.0.3</AspNetVersion> 
+    </PropertyGroup>
+</Project>

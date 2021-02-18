@@ -1,0 +1,41 @@
+﻿@page "/asp"
+@page "/asp/{FileUrl}"
+@inject HttpClient http
+
+<SideBarLink @ref="_sideBarLink">
+    <Links>
+        <SideBanner Title="Asp" Image="asp.png" />
+        <div class="nav-item">
+            <NavLink id="headNav" class="nav-link">
+                <span class="">مقدماتی</span>
+            </NavLink>
+        </div>
+        <BlazoredMenuItem>
+            <NavLink class="nav-link" href="/asp/intro" Match="NavLinkMatch.All">intro</NavLink>
+        </BlazoredMenuItem>
+        <BlazoredMenuItem>
+            <NavLink class="nav-link" href="/asp/text" Match="NavLinkMatch.All">html</NavLink>
+        </BlazoredMenuItem>
+    </Links>
+</SideBarLink>
+
+@code {
+    [Parameter] public string FileUrl { get; set; }
+    SideBarLink _sideBarLink;
+
+
+    protected override async Task OnParametersSetAsync()
+    {
+        try
+        {
+            FileUrl = FileUrl ?? "intro";
+            string response = await http.GetStringAsync($"wwwroot/docs/asp/{FileUrl}.md");
+
+            _sideBarLink.DocContent(response);
+        }
+        catch (HttpRequestException e)
+        {
+            Console.WriteLine($"Don't worry!!{e}");
+        }
+    }
+}
