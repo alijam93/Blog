@@ -41,12 +41,12 @@ else
             </div>
             <div class="mt-4">
                 @foreach (var tag in Post.Tags)
-                {
-                    <AntDesign.Tag Color="blue" Mode="checkable">
-                        <NavLink class="nav-link" href="@($"tag/{tag.Name}")" Match="NavLinkMatch.Prefix">
+                { 
+                    <a href="@($"tag/{tag.Name}")" >
+                        <AntDesign.Tag Color="blue">
                             @tag.Name
-                        </NavLink>
-                    </AntDesign.Tag>
+                        </AntDesign.Tag>
+                    </a>
                 }
             </div>
         </div>

@@ -1,5 +1,7 @@
 ﻿@page "/tag/{Name}"
 @inject HttpClient http
+@inject PostApi postApi
+@using Blog.Shared.Providers.Pagination
 
 @if (Posts == null)
 {
@@ -8,32 +10,86 @@
 }
 else
 {
+    <div class="d-flex justify-content-end mt-2 mr-5">
+        <p class="badge badge-info shadow-sm text-center ml-2"><strong class="h6">@Name</strong></p>
+        <div>
+            <p class="badge badge-light shadow-sm text-center ml-2">
+                <strong class="h6">
+                    <Icon Type="tag" Class="pl-1" Theme="outline" />تگ سرج شده :
+                </strong>
+            </p>
+        </div>
+    </div>
+
     <div class="row row-cols-1 row-cols-md-2">
         @foreach (var post in Posts)
         {
             <div class="col mb-4">
-                <div class="blog-card">
-                    <img class="blog-img" src="https://user-images.githubusercontent.com/16360374/37567282-e1932872-2a81-11e8-807b-efc5a997f2f1.jpg" />
-                    <div class="text-overlay">
-                        <h2 class="card-title">@post.Title</h2>
-                        <p>
-                            @*@post.Content.Substring(0, 70)*@
-                            @*@post.Content.Substring(0, Math.Min(post.Content.Length, 70))*@
-                            <a href="@($"article/{post.Id}/{FriendlyUrlExtension.GetSlugTitle(post.Title)}")" class="read-more stretched-link">مطالعه بیشتر</a>
-                        </p>
+                <div class="card article-card">
+                    @if (!string.IsNullOrEmpty(post.Image))
+                    {
+                        <img src="@post.Image" class="article-img" loading="lazy" />
+                    }
+                    else
+                    {
+                        <div class="article-img"></div>
+                    }
+                    <div class="card-body article-body">
+                        <h5 class="card-title text-wrap article-title rtl">
+                            <a href="@($"article/{post.Id}/{FriendlyUrlExtension.GetSlugTitle(post.Title)}")" class="read-more">
+                                @post.Title
+                            </a>
+                        </h5>
+                        <div class="card-text d-flex bd-highlight pt-4 mb-3">
+                            <div class="mr-auto p-2 bd-highlight">
+                                <AntDesign.Tag Color="blue"> @post.Created.ToPersianDate()</AntDesign.Tag>
+                            </div>
+                            <div class="p-2 bd-highlight">
+                                @foreach (var tag in post.Tags)
+                                {
+                                    <a href="@($"tag/{tag.Name}")">
+                                        <AntDesign.Tag Color="purple">
+                                            @tag.Name
+                                        </AntDesign.Tag>
+                                    </a>
+                                }
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         }
     </div>
+
+    <div class="row mt-5 justify-content-center">
+        <Blog.Client.Components.UI.PostPagination Url="@($"tag/{Name}")" Paging="Paging" Spread="3" SelectedPage="SelectedPage" />
+    </div>
 }
 
 @code {
-    private PostDTO[] Posts;
+    public List<PostDTO> Posts;
     [Parameter] public string Name { get; set; }
+
+    public Paging Paging { get; set; } = new Paging();
+    private PostParameters _postParameters = new PostParameters();
 
     protected override async Task OnInitializedAsync()
     {
-        Posts = await http.GetFromJsonAsync<PostDTO[]>($"api/posts/{Name}");
+        Posts = await http.GetFromJsonAsync<List<PostDTO>>($"api/posts/{Name}");
+
+        await GetPostByTag(Name);
+    }
+
+    private async Task SelectedPage(int page)
+    {
+        _postParameters.PageNumber = page;
+        await GetPostByTag(Name);
+    }
+
+    public async Task GetPostByTag(string name)
+    {
+        var pagingPost = await postApi.GetPostsByTag(_postParameters, name);
+        Posts = pagingPost.Items;
+        Paging = pagingPost.Paging;
     }
 }

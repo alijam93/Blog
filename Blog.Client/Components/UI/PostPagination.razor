@@ -6,7 +6,7 @@
                 {
                     <li @onclick="() => OnSelectedPage(link)" style="cursor: pointer;" class="page-item
                     @(link.Enabled ? null : "disabled") @(link.Active ? "active" : null)">
-                        <a class="page-link" href="/articles?page=@Paging.CurrentPage">@link.Text @link.Icon</a>
+                        <a class="page-link" href="/@Url?page=@Paging.CurrentPage">@link.Text @link.Icon</a>
                     </li>
                 }
             </ul>

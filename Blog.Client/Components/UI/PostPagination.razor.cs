@@ -16,6 +16,7 @@ namespace Blog.Client.Components.UI
         /// Number of page buttons (links) that will show before and after the currently selected page
         /// </summary>
         [Parameter] public int Spread { get; set; }
+        [Parameter] public string Url { get; set; }
         [Parameter] public EventCallback<int> SelectedPage { get; set; }
 
         private List<PagingLink> _links;

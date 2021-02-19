@@ -23,6 +23,31 @@ namespace Blog.Client.Services.Apis
             _http = http;
         }
 
+        public async Task<PagingResponse<PostDTO>> GetPostsByTag(PostParameters postParameters, string name)
+        {
+            var queryStringParam = new Dictionary<string, string>
+            {
+                ["pageNumber"] = postParameters.PageNumber.ToString()
+            };
+
+            url = $"api/posts/{name}";
+
+            var response = await _http.GetAsync(QueryHelpers.AddQueryString(url, queryStringParam));
+            var content = await response.Content.ReadAsStringAsync();
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new ApplicationException(content);
+            }
+            var pagingResponse = new PagingResponse<PostDTO>
+            {
+                Items = JsonSerializer.Deserialize<List<PostDTO>>(content, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }),
+                Paging = JsonSerializer.Deserialize<Paging>(response.Headers.GetValues("X-Pagination").First(), new JsonSerializerOptions { PropertyNameCaseInsensitive = true })
+            };
+
+            return pagingResponse;
+        }
+
         public async Task<PagingResponse<PostDTO>> GetPosts(PostParameters postParameters, string name, int tagId)
         {
             var queryStringParam = new Dictionary<string, string>

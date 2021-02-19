@@ -61,8 +61,10 @@ namespace Blog.Storage.Repositories
                                                 Id = _.Post.Id,
                                                 Title = _.Post.Title,
                                                 Content = _.Post.Content,
+                                                Image = _.Post.Image,
                                                 Like = _.Post.Like,
                                                 Visitor = _.Post.Visitor,
+                                                Created = _.Post.Created,
                                                 Tags = _.Post.PostTags.Select(_ => new TagDTO { Name = _.Tag.Name }).ToList()
                                             }).ToListAsync();
 
