@@ -65,7 +65,7 @@ namespace Blog.Shared.DTOs
         /// </summary>
         public string Image { get; set; }
 
-        public List<int> AddTags { get; set; } = new List<int>();
-        public List<int> RemoveTags { get; set; } = new List<int>();
+        public IEnumerable<int> AddTags { get; set; } = new List<int>();
+        public IEnumerable<int> RemoveTags { get; set; } = new List<int>();
     }
 }

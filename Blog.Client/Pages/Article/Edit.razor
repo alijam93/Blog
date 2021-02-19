@@ -8,16 +8,15 @@
 @using Client.Utils.File
 @using Blog.Shared.Providers.File
 
-
-<br />
 <span class="text-dark rounded mr-3 h2 font-weight-bold">
     ویرایش مقاله
     <Icon Type="edit" Theme="outline" />
 </span>
 <div class="m-3 mt-4 shadow-sm rounded bg-light p-2 color1">
     <br />
-    <EditForm Model="Post" OnValidSubmit="UpdateArticle">
+    <EditForm EditContext="editContext" OnValidSubmit="UpdateArticle">
         <DataAnnotationsValidator />
+
         <div class="form-group row rtl">
             <div class="col col-md-7">
                 <InputText type="text" class="form-control w-75 rounded" @bind-Value="@Post.Title" placeholder="عنوان مقاله" />
@@ -78,31 +77,35 @@
                 <Select Mode="multiple"
                         Style="width: 50%"
                         Placeholder="حذف تگ"
+                        @bind-Values="@delTagId"
                         HideSelected="true"
-                        TItemValue="string"
+                        TItemValue="int"
                         TItem="string"
-                        @bind-Value="@delTagId"
                         NotFoundContent=@noContent
                         Disabled=@disable>
-                    @foreach (var tag in PostTags.Tags)
-                    {
-                        <SelectOption TItemValue="string" TItem="string" Value="@tag.Id.ToString()">@tag.Name</SelectOption>
-                    }
+                    <SelectOptions>
+                        @foreach (var tag in PostTags.Tags)
+                        {
+                            <SelectOption TItemValue="int" TItem="string" Value=@tag.Id Label=@tag.Name />
+                        }
+                    </SelectOptions>
                 </Select>
             </div>
             <div class="col">
                 <Select Mode="multiple"
+                        Placeholder="اضافه کردن تگ"
                         Style="width: 50%"
-                        @bind-Value="@addTagId"
+                        @bind-Values="@addTagId"
                         NotFoundContent=@noContent
-                        TItemValue="string" 
-                        TItem="int"
-                        Placeholder="اضافه کردن تگ" Disabled=@disable>
-
-                    @foreach (var tag in Tags)
-                    {
-                        <SelectOption TItemValue="string" TItem="string" Value="@tag.Id.ToString()">@tag.Name</SelectOption>
-                    }
+                        TItemValue="int"
+                        TItem="string"
+                        Disabled=@disable>
+                    <SelectOptions>
+                        @foreach (var tag in Tags)
+                        {
+                            <SelectOption TItemValue="int" TItem="string" Value=@tag.Id Label=@tag.Name />
+                        }
+                    </SelectOptions>
                 </Select>
             </div>
         </div>
@@ -121,24 +124,22 @@
         font-family: monospace;
         text-align: right;
     }
-
 </style>
 @code {
     [Parameter] public int Id { get; set; }
     [Parameter] public string Slug { get; set; }
 
     PostDTO PostTags = new();
-    EditPostModel Post = new();
+    EditPostModel Post = new EditPostModel();
     List<TagDTO> Tags = new List<TagDTO>();
 
 
-    string delTagId;
-    string addTagId;
+    IEnumerable<int> delTagId;
+    IEnumerable<int> addTagId;
 
     public string imgUrl { get; set; }
     private EditContext editContext;
     MultipartFormDataContent content = new();
-    BrowserFileModel FileModel = new();
     bool disableUpload = true;
 
     string deletePath;
@@ -149,30 +150,25 @@
     bool disable = false;
     string cursor = "";
 
-    private bool formInvalid = true;
-
     protected override async Task OnInitializedAsync()
     {
-        Tags = await http.GetFromJsonAsync<List<TagDTO>>($"api/admin/tags/{Id}");
-        Post = await http.GetFromJsonAsync<EditPostModel>($"api/posts/{Id}/{Slug}");
-        PostTags = await http.GetFromJsonAsync<PostDTO>($"api/posts/{Id}/{Slug}");
-    }
+        editContext = new EditContext(Post);
 
+        Tags = await http.GetFromJsonAsync<List<TagDTO>>($"api/admin/tags/{Id}");
+        PostTags = await http.GetFromJsonAsync<PostDTO>($"api/posts/{Id}/{Slug}");
+
+        Post = await http.GetFromJsonAsync<EditPostModel>($"api/posts/{Id}/{Slug}");
+
+        editContext = new EditContext(Post);
+
+    }
 
     async Task UpdateArticle()
     {
-        if (delTagId != null)
-        {
-            List<int> DelTagIds = delTagId.Split(',').Select(int.Parse).ToList();
-            Post.RemoveTags.AddRange(DelTagIds);
+        editContext.Validate();
 
-        }
-        if (addTagId != null)
-        {
-            List<int> AddTagIds = addTagId.Split(',').Select(int.Parse).ToList();
-            Post.AddTags.AddRange(AddTagIds);
-        }
-
+        Post.AddTags = addTagId;
+        Post.RemoveTags = delTagId;
 
         if (deletePath != null)
         {
@@ -205,10 +201,12 @@
         }
     }
 
+
     async Task OnChangeImage(InputFileChangeEventArgs e)
     {
         Post.Picture = e.File;
         Post.FileName = e.File.Name;
+        editContext.NotifyFieldChanged(FieldIdentifier.Create(() => Post.Picture));
 
         var format = "image/jpeg";
         var resizedFile = await e.File.RequestImageFileAsync(format, 300, 200);

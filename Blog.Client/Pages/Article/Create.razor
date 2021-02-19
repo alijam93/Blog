@@ -8,7 +8,6 @@
 @using Blog.Shared.Providers.File
 @attribute [Authorize(Policy = Policies.IsAdmin)]
 
-<br />
 <span class="text-dark rounded mr-3 h2 font-weight-bold">
     نوشتن مقاله جدید
     <Icon Type="form" Theme="outline" />
@@ -16,7 +15,7 @@
 
 <div class="m-3 mt-4 shadow-sm rounded bg-light p-2 color1">
     <br />
-    <EditForm EditContext="editContext" OnValidSubmit="AddArticle">
+    <EditForm EditContext="editContext" OnValidSubmit="AddArticle" OnInvalidSubmit="TagSubmit">
         <DataAnnotationsValidator />
         <div class="form-group row rtl">
             <div class="col col-md-7">
@@ -56,27 +55,25 @@
 
         </div>
 
-        <div class="form-group mr-1 row rtl">
-            @{
-                RenderFragment noContent =@<Icon Class="text-danger" Type="exclamation-circle" Theme="outline" />;
-            }
+        <div class="form-group mr-1 row rtl"> 
             <Select Mode="multiple"
                     Style="width: 30%"
-                    NotFoundContent=@noContent
+                    @bind-Values="@_selectedValues"
                     TItemValue="string"
                     TItem="string"
-                    ValueType="int"
                     Placeholder="تگ را وارد کنید"
-                    @bind-Value="@Post.AddTags">
-                @foreach (var tag in Tags)
-                {
-                    <SelectOption TItemValue="string" TItem="string" Value="@tag.Id.ToString()">@tag.Name</SelectOption>
-                }
+                    OnSelectedItemsChanged="OnSelectedItemsChangedHandler">
+                <SelectOptions>
+                    @foreach (var tag in Tags)
+                    {
+                        <SelectOption TItemValue="string" TItem="string" Value=@tag.Id.ToString() Label=@tag.Name />
+                    }
+                </SelectOptions>
             </Select>
-            @if (Post.AddTags == null)
+            @if (isTagValid == false)
             {
                 <div class="mr-2">
-                    <ValidationMessage For="@(() => Post.AddTags)" />
+                    <div class="validation-message">تگ خالی میباشد</div>
                 </div>
             }
 
@@ -105,6 +102,8 @@
 
 @code {
     string tagId;
+    bool isTagValid = true;
+    IEnumerable<string> _selectedValues;
 
     public string imgUrl { get; set; }
     private EditContext editContext;
@@ -155,6 +154,26 @@
         }
     }
 
+    private void OnSelectedItemsChangedHandler(IEnumerable<string> values)
+    { 
+        Post.AddTags = string.Join(",", _selectedValues);
+        if (string.IsNullOrEmpty(Post.AddTags))
+        {
+            isTagValid = false;
+        }
+        else
+        {
+            isTagValid = true;
+        }
+    }
+
+    void TagSubmit()
+    {
+        if (string.IsNullOrEmpty(Post.AddTags))
+        {
+            isTagValid = false;
+        }
+    }
 
     async Task OnChangeImage(InputFileChangeEventArgs e)
     {
